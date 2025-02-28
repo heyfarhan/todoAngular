@@ -1,6 +1,6 @@
-export interface todo {
+export interface Todo {
     id: number;
-    title: string;
+    text: string;
     completed: boolean;
-    createdAt: date;
+    createdAt: Date;
 }
