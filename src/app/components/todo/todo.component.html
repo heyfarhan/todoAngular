@@ -1,0 +1,13 @@
+<div class="shadow-xl h-[50px] flex items-center justify-between px-4 rounded-lg mb-2"
+    [class]="todo().completed ? 'bg-amber-100' : ''">
+
+    <input type="checkbox" class="h-5 w-5" [checked]="todo().completed" (change)="todoService.toggleTodo(todo().id)">
+
+    <span [class.line-through]="todo().completed">
+        {{ todo().text }}
+    </span>
+
+
+    <button class="bg-red-500 text-white px-2 py-1 rounded-lg"
+        (click)="todoService.deleteTodo(todo().id)">Delete</button>
+</div>
