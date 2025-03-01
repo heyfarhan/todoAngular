@@ -11,11 +11,5 @@ import { TodoService } from '../../services/todo.service';
 export class AddTodoComponent {
 
   todoService = inject(TodoService);
-  // text = signal<string>("");
-
-  // addTodo() {
-  //   this.todoService.addTodo(this.text());
-  //   this.text("");
-  // }
 
 }

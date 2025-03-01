@@ -67,6 +67,14 @@ export class TodoService {
     this.todoList.update(todos => [...todos, newTodo]);
   }
 
+  updateTodo(id: number, newText: string) {
+    this.todoList.update(todos =>
+      todos.map(todo =>
+        todo.id === id ? { ...todo, text: newText } : todo
+      )
+    );
+  }
+
 
 }
 

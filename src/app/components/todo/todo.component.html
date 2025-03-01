@@ -1,13 +1,33 @@
-<div class="shadow-xl h-[50px] flex items-center justify-between px-4 rounded-lg mb-2"
+<div class="shadow-xl h-[50px] flex items-center justify-between px-4 rounded-lg mb-2 gap-2"
     [class]="todo().completed ? 'bg-amber-100' : ''">
 
     <input type="checkbox" class="h-5 w-5" [checked]="todo().completed" (change)="todoService.toggleTodo(todo().id)">
+
+    @if(!isEditing()){
 
     <span [class.line-through]="todo().completed">
         {{ todo().text }}
     </span>
 
+    }@else {
 
-    <button class="bg-red-500 text-white px-2 py-1 rounded-lg"
-        (click)="todoService.deleteTodo(todo().id)">Delete</button>
+    <input type="text" class="border p-1 rounded w-full bg-transparent outline-none" [(ngModel)]="editedText"
+        (ngModelChange)="editedText.set($event)">
+
+    }
+
+    <div class="flex gap-2">
+
+        <button class="bg-green-500 text-white px-2 py-1 rounded-lg" (click)="isEditing() ? saveTodo() : toggleEdit()">
+
+            {{ isEditing() ? 'Save' : 'Edit' }}
+
+        </button>
+
+        <button class="bg-red-500 text-white px-2 py-1 rounded-lg" (click)="todoService.deleteTodo(todo().id)">
+            Delete
+        </button>
+
+    </div>
+
 </div>
