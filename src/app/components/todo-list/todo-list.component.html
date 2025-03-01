@@ -1,6 +1,19 @@
 <section class="grid grid-cols-2 gap-5 p-10">
+
+    @if(todoList().length===0){
+
+    @for (value of [1,1,1,1,1]; track $index) {
+    <app-shimmer-todo></app-shimmer-todo>
+    }
+
+    }
+
+    @else{
+
     <app-add-todo></app-add-todo>
     @for (todo of todoService.todoList(); track todo.id) {
     <app-todo [todo]="todo"></app-todo>
+    }
+
     }
 </section>

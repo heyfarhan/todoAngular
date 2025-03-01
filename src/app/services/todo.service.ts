@@ -75,6 +75,14 @@ export class TodoService {
     );
   }
 
+  getTodo() {
+    return new Promise<Todo[]>((resolve) => {
+      setTimeout(() => {
+        resolve(this.todoList());
+      }, 1000);
+    });
+  }
+
 
 }
 
