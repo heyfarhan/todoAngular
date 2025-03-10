@@ -1,88 +1,90 @@
 import { Injectable, signal } from '@angular/core';
 import { Todo } from '../models/todo.models';
+import { BehaviorSubject, delay, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodoService {
 
-  constructor() { }
+  list!: Todo[];
+  todo!: Todo[];
 
-  todoList = signal<Todo[]>([{
-    id: 1,
-    text: "Learn React",
-    completed: true,
-    createdAt: new Date()
-  },
-  {
-    id: 2,
-    text: "Learn Angular",
-    completed: false,
-    createdAt: new Date()
-  },
-  {
-    id: 3,
-    text: "Learn NextJs",
-    completed: false,
-    createdAt: new Date()
-  },
-  ]);
-
-  toggleTodo(id: number) {
-    this.todoList.update(todos =>
-      todos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  private getTodosFromLocalStorage(): Todo[] {
+    const storedTodos = localStorage.getItem('list');
+    return storedTodos ? JSON.parse(storedTodos) : [
+      {
+        id: 0,
+        title: "Learn ReactJs",
+        discription: "Start with Components then props then hooks useState, useEffect ,etc",
+        createdAt: new Date(),
+        completed: true
+      },
+      {
+        id: 1,
+        title: "Learn NextJs",
+        discription: "Start with page.js then api route.js then middleware,etc",
+        createdAt: new Date(),
+        completed: false
+      },
+      {
+        id: 2,
+        title: "Learn Angular",
+        discription: "Start with Components then Data Binding, then Service, Routing ,etc",
+        createdAt: new Date(),
+        completed: false
+      },
+    ];
   }
+
+  private saveTodosToLocalStorage(todos: Todo[]) {
+    localStorage.setItem('list', JSON.stringify(todos));
+  }
+
+  getTodos(): Observable<Todo[]> {
+    this.list = this.getTodosFromLocalStorage()
+    this.saveTodosToLocalStorage(this.list)
+    return of(this.list).pipe(delay(1000))
+  }
+
+  updateTodo(todo: Todo): Observable<Todo[]> {
+    this.list = this.list.map((t) => {
+      if (t.id == todo.id) {
+        t = { ...todo }
+      }
+      return t
+    })
+    this.saveTodosToLocalStorage(this.list)
+    return of(this.list).pipe(delay(1000))
+
+  }
+
   deleteTodo(id: number) {
-    this.todoList.update(todos =>
-      todos.filter(todo =>
-        todo.id !== id
-      )
-    );
+    this.list = this.list.filter((t) => {
+      return t.id !== id
+    })
+    this.saveTodosToLocalStorage(this.list)
+    return of(this.list).pipe(delay(1000))
   }
 
-  addTodo(text: string) {
-    const trimmedText = text.trim();
-
-    if (!trimmedText) {
-      alert("Todo cannot be empty!");
-      return;
-    }
-
-    const isDuplicate = this.todoList().some(todo => todo.text.toLowerCase() === trimmedText.toLowerCase());
-    if (isDuplicate) {
-      alert("Todo already exists!");
-      return;
-    }
-
-    const newTodo: Todo = {
-      id: Date.now(),
-      text: trimmedText,
-      completed: false,
-      createdAt: new Date()
-    };
-
-    this.todoList.update(todos => [...todos, newTodo]);
+  getTodoById(id: number) {
+    this.todo = this.list.filter((t) => {
+      return t.id == id
+    })
+    return of(this.todo).pipe(delay(500))
   }
 
-  updateTodo(id: number, newText: string) {
-    this.todoList.update(todos =>
-      todos.map(todo =>
-        todo.id === id ? { ...todo, text: newText } : todo
-      )
-    );
-  }
+  addTodo(data: any) {
+    this.list.push({
+      ...data,
+      id: new Date(),
+      createdAt: false,
+      completed: false
+    })
+    this.saveTodosToLocalStorage(this.list)
+    return of(this.list).pipe(delay(500))
 
-  getTodo() {
-    return new Promise<Todo[]>((resolve) => {
-      setTimeout(() => {
-        resolve(this.todoList());
-      }, 1000);
-    });
   }
-
 
 }
 

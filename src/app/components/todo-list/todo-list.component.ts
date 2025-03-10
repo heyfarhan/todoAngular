@@ -1,28 +1,44 @@
-import { Component, computed, inject, signal, } from '@angular/core';
-import { Todo } from '../../models/todo.models';
-import { TodoComponent } from '../todo/todo.component';
+import { Component } from '@angular/core';
 import { TodoService } from '../../services/todo.service';
-import { AddTodoComponent } from '../add-todo/add-todo.component';
-import { ShimmerTodoComponent } from '../shimmer-todo/shimmer-todo.component';
+import { Observable } from 'rxjs';
+import { Todo } from '../../models/todo.models';
+import { AsyncPipe, CommonModule, JsonPipe, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-todo-list',
-  imports: [TodoComponent, AddTodoComponent, ShimmerTodoComponent],
+  imports: [AsyncPipe, CommonModule, DatePipe, RouterLink],
   templateUrl: './todo-list.component.html',
   styles: ``
 })
 export class TodoListComponent {
 
-  todoService = inject(TodoService)
-  todoList = signal<Todo[]>([])
+  todos$: Observable<Todo[]>;
 
-  constructor() {
-    this.loadTodos();
+  isOpen = false;
+  todoDetail$!: Observable<Todo[]>;
+
+  constructor(private todoService: TodoService) {
+    this.todos$ = this.todoService.getTodos()
   }
 
-  async loadTodos() {
-    this.todoList.set(await this.todoService.getTodo());
+  markCompleted(t: Todo) {
+    this.todos$ = this.todoService.updateTodo({ ...t, completed: !t.completed })
+    this.todoDetail$ = this.todoService.getTodoById(t.id);
   }
 
+  deleteTodo(t: Todo) {
+    if (confirm("Are You Sure You Want to Delete This Todo"))
+      this.todos$ = this.todoService.deleteTodo(t.id)
+  }
 
+  viewTodo(t: Todo) {
+    this.isOpen = true;
+    this.todoDetail$ = this.todoService.getTodoById(t.id);
+  }
+
+  closeView() {
+    this.isOpen = false;
+    console.log(this.isOpen)
+  }
 }

@@ -1,19 +1,61 @@
-<section class="grid grid-cols-2 gap-5 p-10">
+<main class="flex justify-center min-h-[100vh] items-center bg-amber-300 ">
 
-    @if(todoList().length===0){
+    <div *ngIf="(todos$ | async) as todos  else loading" class="flex gap-10 flex-col">
 
-    @for (value of [1,1,1,1,1]; track $index) {
-    <app-shimmer-todo></app-shimmer-todo>
-    }
+        <div
+            class="grid grid-cols-2 gap-5 w-[80vw] lg:w-[60vw] text-center bg-white rounded-xl p-2 justify-center items-center ">
+            <h2>Title</h2>
+            <div class="grid grid-cols-3 md:grid-cols-4">
+                <p>Status</p>
+                <span>View</span>
+                <button class=" hidden md:block ">Edit</button>
+                <button>Delete</button>
+            </div>
+        </div>
+        <button routerLink="add"
+            class="w-[80vw] lg:w-[60vw] text-center bg-blue-600 text-white rounded-xl p-2 justify-center items-center hover:bg-blue-800">
+            Add Todo
+        </button>
+        <div class="grid grid-cols-2 gap-5 w-[80vw] lg:w-[60vw] text-center bg-white rounded-xl p-2 justify-center items-center "
+            *ngFor="let t of todos; " [ngClass]="{'opacity-70':t.completed}">
 
-    }
+            <h2 [ngClass]="{'line-through':t.completed}">{{t.title}}</h2>
+            <div class="grid grid-cols-3 md:grid-cols-4 justify-around">
+                <button (click)="markCompleted(t)">{{t.completed ? "✅":"🔘"}}</button>
+                <button (click)="viewTodo(t)"
+                    class=" py-1 text-white text-sm bg-blue-600 rounded-lg">{{isOpen?"CLose":"View"}}</button>
+                <button [routerLink]="['edit',t.id]" class=" hidden md:block ">✏️</button>
+                <button (click)="deleteTodo(t)">❌</button>
+            </div>
+        </div>
 
-    @else{
+    </div>
 
-    <app-add-todo></app-add-todo>
-    @for (todo of todoService.todoList(); track todo.id) {
-    <app-todo [todo]="todo"></app-todo>
-    }
+    <div class="fixed h-[100vh] w-[100vw] flex justify-center items-center   backdrop-blur-sm bg-[rgba(0,0,0,0.3)]"
+        [class]="{'hidden':!isOpen}">
+        <div class=" absolute bg-white h-[80vh] w-[80vw] lg:h-[50vh] lg:w-[60vw] rounded-2xl p-12 z-50">
+            <button class=" absolute right-4 top-4 text-2xl" (click)="closeView()">❎</button>
+            <div *ngIf="(todoDetail$ | async) as todo else loading " class="flex flex-col gap-5 justify-center"
+                [ngClass]="{'opacity-65':todo[0].completed}">
+                <div class="flex gap-5 justify-center items-center">
+                    <span class="font-extrabold text-xl"
+                        [ngClass]="{'line-through':todo[0].completed}">{{todo[0].title}}</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="font-medium">Discription :</span>
+                    <span>{{todo[0].discription}}</span>
+                </div>
+                <div class="flex gap-5">
+                    <span class="font-medium">Created At :</span>
+                    <span>{{todo[0].createdAt | date:"mm:hh , dd/MMM/yyyy"}}</span>
+                </div>
+                <div class="flex gap-5">
+                    <span class="font-medium">Status :</span>
+                    <button (click)="markCompleted(todo[0])">{{todo[0].completed ? "✅":"🔘"}}</button>
+                </div>
+            </div>
+            <ng-template #loading>loading...</ng-template>
+        </div>
+    </div>
 
-    }
-</section>
+</main>
