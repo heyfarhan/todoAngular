@@ -14,7 +14,7 @@ export class TodoService {
     const storedTodos = localStorage.getItem('list');
     return storedTodos ? JSON.parse(storedTodos) : [
       {
-        id: 0,
+        id: 55,
         title: "Learn ReactJs",
         discription: "Start with Components then props then hooks useState, useEffect ,etc",
         createdAt: new Date(),
@@ -77,13 +77,18 @@ export class TodoService {
   addTodo(data: any) {
     this.list.push({
       ...data,
-      id: new Date(),
+      id: Number(new Date()),
       createdAt: false,
       completed: false
     })
     this.saveTodosToLocalStorage(this.list)
     return of(this.list).pipe(delay(500))
+  }
 
+  getSortTodoById() {
+    this.list.sort((a, b) => a.id - b.id)
+    console.log(this.list)
+    return of(this.list).pipe(delay(500))
   }
 
 }

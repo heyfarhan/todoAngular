@@ -1,6 +1,6 @@
 import { AsyncPipe, CommonModule, JsonPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, ActivatedRoute, ParamMap } from '@angular/router'
+import { RouterLink, ActivatedRoute, ParamMap, Router } from '@angular/router'
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../models/todo.models';
 import { Observable } from 'rxjs';
@@ -8,7 +8,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 
 @Component({
   selector: 'app-edit-todo',
-  imports: [RouterLink, AsyncPipe, ReactiveFormsModule, CommonModule],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule],
   templateUrl: './edit-todo.component.html',
   styles: ``
 })
@@ -19,11 +19,14 @@ export class EditTodoComponent implements OnInit {
 
   editTodo !: FormGroup;
 
-  constructor(private route: ActivatedRoute, private todoService: TodoService) {
+  constructor(private route: ActivatedRoute, private todoService: TodoService, private router: Router) {
 
     this.editTodo = new FormGroup({
+      id: new FormControl(''),
       title: new FormControl('', Validators.required),
-      discription: new FormControl('')
+      discription: new FormControl(''),
+      completed: new FormControl(''),
+      createdAt: new FormControl(''),
     })
 
   }
@@ -32,11 +35,16 @@ export class EditTodoComponent implements OnInit {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.id = Number(params.get('id'))
     })
-    this.todo$ = this.todoService.getTodoById(this.id)
+    this.todoService.getTodoById(this.id).subscribe((data) => {
+      this.editTodo.patchValue(data[0])
+    })
   }
 
   updateTodo(form: FormGroup) {
-    console.log(form.value)
+    if (form.valid) {
+      this.todoService.updateTodo(this.editTodo.value)
+      this.router.navigate(['/'])
+    }
   }
 
 }

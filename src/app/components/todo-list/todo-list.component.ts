@@ -41,4 +41,9 @@ export class TodoListComponent {
     this.isOpen = false;
     console.log(this.isOpen)
   }
+
+  sort() {
+    this.todos$ = this.todoService.getSortTodoById()
+  }
+
 }

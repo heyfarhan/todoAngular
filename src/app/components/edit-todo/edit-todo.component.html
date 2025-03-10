@@ -2,17 +2,17 @@
     <button routerLink="/" class="bg-green-500 text-white font-bold px-2 py-1 rounded-2xl absolute top-10 left-5 ">Go
         Back</button>
     <form class=" w-[80vw] lg:w-[60vw] bg-indigo-500 px-16 py-12 flex flex-col gap-5 rounded-2xl text-bold text-lg "
-        *ngIf="(todo$ | async) as todo" [formGroup]="editTodo">
-        {{todo| json}}
-        <!-- <div *ngIf="newTodo.get('title')?.invalid && (newTodo.get('title')?.dirty || newTodo.get('title')?.touched)" -->
-        <!-- <div class="font-bold bg-red-700 text-white rounded-2xl text-center p-0.5">
-            <span *ngIf="newTodo.get('title')?.hasError('required')">Title is Required</span>
-        </div> -->
+        [formGroup]="editTodo" *ngIf="editTodo.value.id!=='' else loading">
+        <div *ngIf="editTodo.get('title')?.invalid && (editTodo.get('title')?.dirty || editTodo.get('title')?.touched)">
+            <div class="font-bold bg-red-700 text-white rounded-2xl text-center p-0.5">
+                <span *ngIf="editTodo.get('title')?.hasError('required')">Title is Required</span>
+            </div>
+        </div>
         <div class="flex gap-2 md:gap-15 items-center">
             <label for="title" class="text-white">Title</label>
             <input formControlName="title" id="title"
                 class="bg-white focus:outline-none text-2xl rounded-2xl p-2 w-[88%]" type="text"
-                placeholder="Enter What To Do...." [value]="todo[0].title" />
+                placeholder="Enter What To Do...." />
         </div>
         <label for="discription" class="text-white">Discription</label>
         <textarea id="discription" formControlName="discription" class="bg-white focus:outline-none rounded-2xl p-2"
@@ -20,14 +20,15 @@
         <div class="flex gap-2 md:gap-15 items-center">
             <label for="completed" class="text-white">Completed</label>
             <input formControlName="completed" id="completed"
-                class="bg-white focus:outline-none text-2xl rounded-2xl p-2 " type="checkbox"
-                [checked]="todo[0].completed" />
+                class="bg-white focus:outline-none text-2xl rounded-2xl p-2 " type="checkbox" />
         </div>
         <button
             class="bg-yellow-500 text-white font-bold px-2 py-1 rounded-2xl hover:bg-yellow-600 w-[20%] self-center "
-            type="submit" (click)="updateTodo(editTodo)">Add</button>
+            type="submit" (click)="updateTodo(editTodo)" [disabled]="!editTodo.valid">Save</button>
 
     </form>
+    <ng-template #loading>loading...</ng-template>
+
 
 
 </main>
